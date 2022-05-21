@@ -1,0 +1,11 @@
+{
+    "require": {
+        "slim/slim": "3.*"
+    },
+    "scripts": {
+        "server": [
+            "Composer\\Config::disableProcessTimeout",
+            "php -S localhost:8080 -t public/"
+        ]
+    }
+}
