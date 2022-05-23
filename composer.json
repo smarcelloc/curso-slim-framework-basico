@@ -1,11 +1,38 @@
 {
+    "autoload": {
+        "psr-4": {
+            "App\\": [
+                "app/"
+            ]
+        },
+        "files": [
+            "app/config.php",
+            "app/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\": [
+                "tests/"
+            ]
+        }
+    },
     "require": {
-        "slim/slim": "3.*"
+        "slim/slim": "^3.12",
+        "vlucas/phpdotenv": "^5.4",
+        "doctrine/orm": "^2.12",
+        "symfony/cache": "^5.4",
+        "doctrine/annotations": "^1.13"
     },
     "scripts": {
         "server": [
             "Composer\\Config::disableProcessTimeout",
             "php -S localhost:8080 -t public/"
-        ]
+        ],
+        "schema:info": "php bin/doctrine orm:info",
+        "schema:describe": "php bin/doctrine orm:mapping:describe",
+        "schema:create": "php bin/doctrine orm:schema-tool:create",
+        "schema:drop": "php bin/doctrine orm:schema-tool:drop --force",
+        "schema:update": "php bin/doctrine orm:schema-tool:update --force"
     }
 }
