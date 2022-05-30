@@ -5,7 +5,7 @@ namespace App\Controllers;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class HomeController extends Controller
+class HomeController
 {
     public function index(Request $req, Response $res): Response
     {

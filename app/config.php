@@ -3,6 +3,7 @@
 /**
  * Configuração dos caminhos de diretórios.
  */
+
 $dirRoot = dirname(__FILE__, 2);
 define('PATH', [
     'root' => $dirRoot,
@@ -23,7 +24,8 @@ define('PATH', [
 define('APP', [
     'name' => $_ENV['APP_NAME'] ?? 'slim',
     'version' => $_ENV['APP_VERSION'] ?? '1',
-    'env' => $_ENV['APP_ENV'] ?? 'local'
+    'env' => $_ENV['APP_ENV'] ?? 'local',
+    'debug' => $_ENV['APP_DEBUG'] === 'true',
 ]);
 
 /**
@@ -36,4 +38,26 @@ define('DB', [
     'user'     => $_ENV['DB_USER'],
     'password' => $_ENV['DB_PASSWORD'],
     'dbname'   => $_ENV['DB_NAME'],
+]);
+
+/**
+ * Configuração de exibição de erros
+ */
+if (APP['debug'] === true) {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+} else {
+    error_reporting(0);
+    ini_set("display_errors", 0);
+}
+
+/**
+ * Configuração do Slim Framework
+ * 
+ * @see https://www.slimframework.com/docs/v3/objects/application.html#slim-default-settings
+ */
+define('SLIM', [
+    'settings' => [
+        'displayErrorDetails' => APP['debug'],
+    ]
 ]);

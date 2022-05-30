@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\Index;
+use Respect\Validation\Validator;
 
 /**
  * @Entity
@@ -45,11 +46,36 @@ class Product
     private $amount;
 
     /**
-     * @ManyToOne(targetEntity="Store")
-     * @JoinColumn(name="store_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="App\Entities\Store", cascade={"persist"})
+     * @JoinColumn(onDelete="CASCADE", nullable=false, unique=false)
      * @var \App\Entities\Store
      */
     private $store;
+
+    /**
+     * Construtor da classe
+     *
+     * @param array $properties
+     */
+    public function __construct(array $properties)
+    {
+        $this->set($properties);
+    }
+
+    /**
+     * Transforma array em propriedade
+     *
+     * @param array $properties
+     * @return void
+     */
+    public function set(array $properties)
+    {
+        foreach ($properties as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            }
+        }
+    }
 
     /**
      * Get the value of id
@@ -155,4 +181,29 @@ class Product
         $this->store = $store;
         return $this;
     }
+
+    /**
+     * Transformar propriedade para Array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return get_object_vars($this);
+    }
+
+    // /**
+    //  * Regra de validação.
+    //  *
+    //  * @throws \Respect\Validation\Exceptions\NestedValidationException
+    //  * @return void
+    //  */
+    // public function validate()
+    // {
+    //     $validator = new Validator();
+    //     $validator->attribute('name', Validator::stringType()->length(null, 254)->notBlank());
+    //     $validator->attribute('decimal', Validator::->notBlank());
+    //     $validator->attribute('address', Validator::stringType()->length(null, 254)->notBlank());
+    //     $validator->assert($this);
+    // }
 }

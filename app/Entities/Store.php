@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Index;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator;
 
 /**
  * @Entity
@@ -39,6 +41,29 @@ class Store
      * @var string
      */
     private $address;
+
+    /**
+     * Transforma array em propriedade
+     *
+     * @param array $properties
+     * @return void
+     */
+    public function set(array $properties)
+    {
+        foreach ($properties as $key => $value) {
+            $this->{$key} = $value;
+        }
+    }
+
+    /**
+     * Construtor da classe
+     *
+     * @param array $properties
+     */
+    public function __construct(array $properties)
+    {
+        $this->set($properties);
+    }
 
     /**
      * Get the value of id
@@ -120,5 +145,30 @@ class Store
         $this->address = $address;
 
         return $this;
+    }
+
+    /**
+     * Regra de validação.
+     *
+     * @throws \Respect\Validation\Exceptions\NestedValidationException
+     * @return void
+     */
+    public function validate()
+    {
+        $validator = new Validator();
+        $validator->attribute('name', Validator::stringType()->length(null, 254)->notBlank());
+        $validator->attribute('phone', Validator::stringType()->length(null, 20)->notBlank());
+        $validator->attribute('address', Validator::stringType()->length(null, 254)->notBlank());
+        $validator->assert($this);
+    }
+
+    /**
+     * Transformar propriedade para Array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return get_object_vars($this);
     }
 }
