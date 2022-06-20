@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+use App\Commands\CacheCleanCommand;
+use App\Commands\ServerCommand;
+use App\Supports\EntityManagerFactory;
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+
+require __DIR__ . '/vendor/autoload.php';
+
+if (isProduction()) {
+    echo "Os comandos não podem ser executados em produção." . PHP_EOL;
+    exit;
+}
+
+$entityManagerFactory = new EntityManagerFactory();
+$entityManager = $entityManagerFactory->getEntityManager();
+
+ConsoleRunner::run(new SingleManagerProvider($entityManager), [
+    new ServerCommand(),
+    new CacheCleanCommand(),
+]);

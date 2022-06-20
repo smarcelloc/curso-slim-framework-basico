@@ -32,14 +32,14 @@ class Product
     private $name;
 
     /**
-     * @ORM\Column(type="decimal")
+     * @ORM\Column(type="integer", options={"unsigned":true, "default":0})
      *
      * @var float
      */
     private $price;
 
     /**
-     * @ORM\Column(type="integer", options={"unsigned":true, "default":0})
+     * @ORM\Column(type="integer", options={"unsigned":true, "default":1})
      *
      * @var integer
      */
@@ -114,7 +114,7 @@ class Product
     /**
      * Get the value of price
      *
-     * @return  float
+     * @return  integer
      */
     public function getPrice()
     {
@@ -124,7 +124,7 @@ class Product
     /**
      * Set the value of price
      *
-     * @param  float  $price
+     * @param  integer  $price
      *
      * @return  self
      */
@@ -189,21 +189,23 @@ class Product
      */
     public function toArray()
     {
-        return get_object_vars($this);
+        $store_id = $this->store->getId();
+        unset($this->store);
+        return array_merge(get_object_vars($this), ['store_id' => $store_id]);
     }
 
-    // /**
-    //  * Regra de validação.
-    //  *
-    //  * @throws \Respect\Validation\Exceptions\NestedValidationException
-    //  * @return void
-    //  */
-    // public function validate()
-    // {
-    //     $validator = new Validator();
-    //     $validator->attribute('name', Validator::stringType()->length(null, 254)->notBlank());
-    //     $validator->attribute('decimal', Validator::->notBlank());
-    //     $validator->attribute('address', Validator::stringType()->length(null, 254)->notBlank());
-    //     $validator->assert($this);
-    // }
+    /**
+     * Regra de validação.
+     *
+     * @throws \Respect\Validation\Exceptions\NestedValidationException
+     * @return void
+     */
+    public function validate()
+    {
+        $validator = new Validator();
+        $validator->attribute('name', Validator::stringType()->length(null, 254)->notBlank()->setName('Nome'));
+        $validator->attribute('price', Validator::numericVal()->positive()->max(99999999)->notBlank()->setName('Preço'));
+        $validator->attribute('amount', Validator::numericVal()->positive()->max(999999)->notBlank()->setName('Quantidade'));
+        $validator->assert($this);
+    }
 }

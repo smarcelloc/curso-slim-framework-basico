@@ -6,7 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Index;
-use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator;
 
 /**
@@ -148,6 +147,16 @@ class Store
     }
 
     /**
+     * Transformar propriedade para Array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return get_object_vars($this);
+    }
+
+    /**
      * Regra de validação.
      *
      * @throws \Respect\Validation\Exceptions\NestedValidationException
@@ -156,19 +165,9 @@ class Store
     public function validate()
     {
         $validator = new Validator();
-        $validator->attribute('name', Validator::stringType()->length(null, 254)->notBlank());
-        $validator->attribute('phone', Validator::stringType()->length(null, 20)->notBlank());
-        $validator->attribute('address', Validator::stringType()->length(null, 254)->notBlank());
+        $validator->attribute('name', Validator::stringType()->length(null, 254)->notBlank()->setName('Nome'));
+        $validator->attribute('phone', Validator::stringType()->length(null, 20)->notBlank()->setName('Telefone'));
+        $validator->attribute('address', Validator::stringType()->length(null, 254)->notBlank()->setName('Endereço'));
         $validator->assert($this);
-    }
-
-    /**
-     * Transformar propriedade para Array
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return get_object_vars($this);
     }
 }

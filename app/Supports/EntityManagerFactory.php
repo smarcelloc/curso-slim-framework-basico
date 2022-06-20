@@ -4,6 +4,7 @@ namespace App\Supports;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 /**
  * Setup das entidades manager ORM.
@@ -17,9 +18,16 @@ class EntityManagerFactory
      */
     public function getEntityManager(): EntityManager
     {
-        $path = array(PATH['entities']);
-        $config = ORMSetup::createAnnotationMetadataConfiguration($path, isLocal());
+        // Metadado de Anotação
+        $path = array(PATH['app'] . '/Entities');
+        $config = ORMSetup::createAnnotationMetadataConfiguration($path, !isProduction());
 
-        return EntityManager::create(DB, $config);
+        // Cache
+        if (isProduction()) {
+            $cache = new PhpFilesAdapter('db', 0, PATH['cache']);
+            $config->setMetadataCache($cache);
+        }
+
+        return EntityManager::create(DATABASE, $config);
     }
 }

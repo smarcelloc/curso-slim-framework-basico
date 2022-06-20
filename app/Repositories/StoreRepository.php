@@ -14,20 +14,29 @@ class StoreRepository
      */
     private $manager;
 
-    public function __construct()
+    /**
+     * Construtor da classe.
+     *
+     * @param \Doctrine\ORM\EntityManager|null $manager
+     */
+    public function __construct($manager = null)
     {
-        $this->manager = (new EntityManagerFactory())->getEntityManager();
+        if (is_null($manager)) {
+            $this->manager = (new EntityManagerFactory())->getEntityManager();
+        } else {
+            $this->manager = $manager;
+        }
     }
 
     /**
      * Inserir uma loja
      *
-     * @param array $properties
+     * @param array $data
      * @return integer Retorna o ID cadastrado.
      */
-    public function insert(array $properties)
+    public function insert(array $data)
     {
-        $store = new Store($properties);
+        $store = new Store($data);
         $store->validate();
         $this->manager->persist($store);
         $this->manager->flush();
@@ -38,17 +47,13 @@ class StoreRepository
      * Atualização de uma loja
      *
      * @param int $id
-     * @param array $properties
+     * @param array $data
      * @return integer Retorna o ID cadastrado.
      */
-    public function update(int $id, array $properties)
+    public function update(int $id, array $data)
     {
-        $store = $this->manager->find(Store::class, $id);
-        if (!$store) {
-            throw new \InvalidArgumentException('Registro não encontrado !!!');
-        }
-
-        $store->set($properties);
+        $store = $this->getId($id);
+        $store->set($data);
         $store->validate();
         $this->manager->persist($store);
         $this->manager->flush();
@@ -58,23 +63,29 @@ class StoreRepository
      * Consultar loja por ID
      *
      * @param integer $id
-     * @return \App\Entities\Store|null
+     * @throws \InvalidArgumentException
+     * @return \App\Entities\Store
      */
-    public function findById(int $id)
+    public function getId(int $id)
     {
         if ($id > 0) {
-            return $this->manager->getRepository(Store::class)->find($id);
+            if ($store = $this->manager->getRepository(Store::class)->find($id)) {
+                return $store;
+            }
         }
+
+        throw new \InvalidArgumentException('Loja não encontrado !!!');
     }
 
     /**
      * Deleta uma loja
      *
-     * @param Store $store
+     * @param integer $id
      * @return void
      */
-    public function delete(Store $store)
+    public function delete(int $id)
     {
+        $store = $this->getId($id);
         $this->manager->remove($store);
         $this->manager->flush();
     }
@@ -87,12 +98,8 @@ class StoreRepository
     public function getAll()
     {
         $stores = $this->manager->getRepository(Store::class)->findAll();
-
-        $arrayStores = [];
-        foreach ($stores as $store) {
-            array_push($arrayStores, $store->toArray());
-        }
-
-        return $arrayStores;
+        return array_map(function ($store) {
+            return $store->toArray();
+        }, $stores);
     }
 }

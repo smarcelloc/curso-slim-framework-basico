@@ -5,15 +5,25 @@ namespace App\Controllers;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+/**
+ * Classe de controller do Home
+ */
 class HomeController
 {
+    /**
+     * Exibir informação inicial ao usuário final.
+     * 
+     * @param Request $req
+     * @param Response $res
+     * @return Response
+     */
     public function index(Request $req, Response $res): Response
     {
         return $res->withJson([
             'status' => true,
             'response' => [
-                'name' => 'API Lojas',
-                'version' => 'v1.0',
+                'name' => APP['name'],
+                'version' => APP['version'],
             ]
         ]);
     }
